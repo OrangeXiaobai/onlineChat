@@ -1,0 +1,74 @@
+{% extends 'index.html' %}
+{% block content %}
+    <div id="chat-container">
+        <h2>聊天室</h2>
+        <form method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button id="sendButton" type="submit">发送</button>
+        </form>
+        <div id="messages">
+            {% if answer %}
+                {% for data in answer %}
+                    {% if data.ai_answer %}
+                        <h4>暂无数据，调用AI回答：</h4>
+                    {% endif %}
+                    {% if data.response_type == 'text' %}
+                        <p>{{ data.content }}<br></p>
+                    {% elif data.response_type == 'image' %}
+                        <img src="{{ data.content }}" alt="images">
+                    {% elif data.response_type == 'link' %}
+                        <a href="http://{{ data.content }}" target="_blank">{{ data.content }}<br></a>
+                    {% endif %}
+                {% endfor %}
+            {% endif %}
+        </div>
+
+        <form id="uploadForm" method="post" style="display: none;" enctype="multipart/form-data" action="{% url 'addlogo' %}">
+            {% csrf_token %}
+            <input type="file" name="file">
+            <button type="submit">下载加水印的图片</button>
+        </form>
+
+        {% if messages %}
+        <ul>
+            {% for message in messages %}
+                <li>{{ message }}</li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var keywordsField = document.querySelector('#id_keywords');
+            var sendButton = document.querySelector('#sendButton');
+            var messages = document.querySelector('#messages')
+
+            keywordsField.addEventListener('input', function() {
+                var keywords = keywordsField.value.split(',');
+                var allowedKeywords = ['噢易', 'oseasy', 'os-easy', 'logo', '水印'];
+
+                var showUploadForm = false;
+                var showSendButton = true;
+                var showMessages = true;
+                for (var i = 0; i < keywords.length; i++) {
+                    if (allowedKeywords.includes(keywords[i].trim())) {
+                        showUploadForm = true;
+                        showSendButton = false;
+                        showMessages = false;
+                        break;
+                    }
+                }
+
+                var uploadForm = document.getElementById('uploadForm');
+                uploadForm.style.display = showUploadForm ? 'block' : 'none';
+                sendButton.style.display = showSendButton ? 'block' : 'none';
+                messages.style.display = showMessages ? 'block' : 'none';
+            });
+        });
+
+    </script>
+{% endblock %}
+
+

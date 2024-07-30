@@ -1,0 +1,35 @@
+{% extends 'index.html' %}
+{% block content %}
+    <form method="post" enctype="multipart/form-data" action="{% url 'answer_add' %}">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Submit</button>
+    </form>
+    {% if messages %}
+        <ul>
+            {% for message in messages %}
+                <li>{{ message }}</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+    <script>
+        function toggleFields() {
+            const responseType = document.getElementById('id_response_type').value;
+            const contentField = document.getElementById('id_content').parentElement;
+            const imageField = document.getElementById('id_image').parentElement;
+
+            if (responseType === 'image') {
+                contentField.style.display = 'none';
+                imageField.style.display = 'block';
+            } else {
+                contentField.style.display = 'block';
+                imageField.style.display = 'none';
+            }
+        }
+
+        window.onload = function() {
+            toggleFields();
+            document.getElementById('id_response_type').addEventListener('change', toggleFields);
+        }
+    </script>
+{% endblock %}

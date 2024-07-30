@@ -1,0 +1,45 @@
+{% extends 'index.html' %}
+{% block content %}
+     <h1>应答管理</h1>
+    <div class="sidebar-nav">
+    <a href="{% url 'answer_add' %}">添加</a>
+    </div>
+    <br>
+    <table border="1">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Keywords</th>
+                <th>Response Type</th>
+                <th>Content</th>
+                <th>AI Answer</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for answer in answers %}
+            <tr>
+                <td>{{ answer.id }}</td>
+                <td>{{ answer.keywords }}</td>
+                <td>{{ answer.response_type }}</td>
+                <td>{{ answer.content }}</td>
+                <td>{{ answer.ai_answer }}</td>
+                <td>
+                    <a href="{% url 'answer_edit' answer.id %}">编辑</a>
+                    <form action="{% url 'answer_delete' answer.id %}" method="post" style="display:inline;">
+                        {% csrf_token %}
+                        <button type="submit">删除</button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+        {% if messages %}
+        <ul>
+            {% for message in messages %}
+                <li>{{ message }}</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+{% endblock %}

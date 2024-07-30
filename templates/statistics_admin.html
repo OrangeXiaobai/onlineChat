@@ -1,0 +1,27 @@
+{% extends 'index.html' %}
+{% block content %}
+    <h1>数据统计</h1>
+    <table border="1">
+        <tr>
+            <th>ID</th>
+            <th>IP</th>
+            <th>BROWSER TYPE</th>
+            <th>KEYWORD</th>
+            <th>TIME</th>
+        </tr>
+        {% for data in response %}
+            <tr>
+                <td>{{ data.id }}</td>
+                <td>{{ data.ip_address }}</td>
+                <td>{{ data.browser_type }}</td>
+                <td>{{ data.keyword }}</td>
+                <td>{{ data.timestamp }}</td>
+            </tr>
+        {% endfor %}
+    </table>
+    <div class="sidebar-nav">
+        <li><a href="{% url 'data_excel' %}">导出统计数据为 Excel</a></li>
+        <li><a href="{% url 'data_image' %}">导出统计数据为 图片</a></li>
+    </div>
+
+{% endblock %}
