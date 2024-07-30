@@ -1,0 +1,36 @@
+{% extends 'index.html' %}
+{% block content %}
+    <h1>在线用户</h1>
+    <div class="sidebar-nav">
+        {% for data in userstatus %}
+            {% if user.phone_number not in data.phone_number %}
+                {% if data.is_online %}
+                    <span class="online">●</span>
+                    {{ data.phone_number }} - {{ data.ip_address }}
+                    <a href="{% url 'userchat' data.user %}">私信</a>
+                    <br>
+                {% endif %}
+            {% endif %}
+        {% endfor %}
+    </div>
+    <h1>离线用户</h1>
+    <div class="sidebar-nav">
+        {% for data in userstatus %}
+            {% if user.phone_number not in data.phone_number %}
+                {% if  not data.is_online%}
+                    <span class="offline">●</span>
+                        {{ data.phone_number }}
+                    <br>
+                {% endif %}
+            {% endif %}
+        {% endfor %}
+    </div>
+
+    {% if messages %}
+        <ul>
+            {% for message in messages %}
+                <li>{{ message }}</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+{% endblock %}

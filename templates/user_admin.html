@@ -1,0 +1,47 @@
+{% extends 'index.html' %}
+{% block content %}
+    <h1>用户管理</h1>
+    <div class="sidebar-nav">
+    <li><a href="{% url 'user_export' %}">导出用户数据</a></li>
+    <br>
+    <form method="post" enctype="multipart/form-data" action="{% url 'user_import' %}">
+        {% csrf_token %}
+        <input type="file" name="file" id="fileInput">
+        <button type="submit">导入用户数据</button>
+    </form>
+    </div>
+    <br>
+    <table border="1">
+        <tr>
+            <th>ID</th>
+            <th>Phone Number</th>
+            <th>Email</th>
+            <th>Status</th>
+            <th>操作</th>
+        </tr>
+        {% for user in users %}
+        <tr>
+            <td>{{ user.id }}</td>
+            <td>{{ user.phone_number }}</td>
+            <td>{{ user.email }}</td>
+            <td>{{ user.status }}</td>
+            <td>
+                <a href="{% url 'user_edit' user.id %}">修改</a>
+                <form method="post" action="{% url 'user_delete' user.id %}" style="display:inline;">
+                    {% csrf_token %}
+                    <button type="submit">删除</button>
+                </form>
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+    <div class="sidebar-nav">
+    {% if messages %}
+        <ul>
+            {% for message in messages %}
+                <li>{{ message }}</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+    </div>
+{% endblock %}

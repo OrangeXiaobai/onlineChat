@@ -1,0 +1,18 @@
+{% extends 'index.html' %}
+{% block content %}
+    <h1>与用户{{ other_user.phone_number }}私信</h1>
+    <a href="">刷新消息列表</a>
+    <div>
+        {% for message in messages %}
+            <div>
+                {{ message.timestamp | date:"Y-m-d H:i" }}&emsp;
+                <strong>{{ message.sender.phone_number }}：</strong>{{ message.content }}
+            </div>
+        {% endfor %}
+    </div>
+    <form method="post">
+        {% csrf_token %}
+        <textarea name="content" required></textarea>
+        <button type="submit">发送</button>
+    </form>
+{% endblock %}
