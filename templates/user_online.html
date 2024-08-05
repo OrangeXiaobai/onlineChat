@@ -1,13 +1,18 @@
 {% extends 'index.html' %}
 {% block content %}
     <h1>在线用户</h1>
+    <h4>私信-新:Channel+WebSocket+Redis</h4>
+    <h4>私信-旧:存数据取数据</h4>
     <div class="sidebar-nav">
         {% for data in userstatus %}
             {% if user.phone_number not in data.phone_number %}
                 {% if data.is_online %}
                     <span class="online">●</span>
                     {{ data.phone_number }} - {{ data.ip_address }}
-                    <a href="{% url 'userchat' data.user %}">私信</a>
+                    &nbsp;&nbsp;&nbsp;&nbsp;
+                    <a href="{% url 'chat_room' room_name=user.phone_number|add:data.phone_number %}">私信-新</a>
+                    &nbsp;&nbsp;&nbsp;&nbsp;
+                    <a href="{% url 'userchat' data.user %}">私信-旧</a>
                     <br>
                 {% endif %}
             {% endif %}

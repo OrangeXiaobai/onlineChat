@@ -1,0 +1,100 @@
+{% extends 'index.html' %}
+{% block content %}
+    <div id="chat-log"></div>
+
+    <form id="chat-message-form">
+        <input type="text" id="chat-message-input" autocomplete="off">
+        <button type="submit">Send</button>
+    </form>
+    <br>
+    <form id="chat-file-form" enctype="multipart/form-data">
+        <p style="margin-bottom: 0px;">可发送图片或视频</p>
+        <input type="file" id="chat-file-input">
+        <button type="submit">Upload</button>
+    </form>
+    <a id="download-link" style="display:none;"></a>
+
+    <script>
+        const roomName = "{{ room_name }}";
+        const userPhoneNumber = "{{ user.phone_number }}";
+        const chatSocket = new WebSocket(
+            'ws://' + window.location.host + '/ws/chat/' + roomName + '/');
+
+        chatSocket.onmessage = function(e) {
+            const data = JSON.parse(e.data);
+            const message = data.message;
+            const messageType = data.message_type;
+            const fileType = data.file_type;
+
+            const chatLog = document.querySelector('#chat-log');
+            const messageElement = document.createElement('div');
+
+            if (messageType === 'file') {
+                if (fileType.startsWith('image/')) {
+                    const img = document.createElement('img');
+                    img.src = message;
+                    messageElement.appendChild(img);
+                } else if (fileType.startsWith('video/')) {
+                    const video = document.createElement('video');
+                    video.src = message;
+                    video.controls = true;
+                    messageElement.appendChild(video);
+                } else if (fileType.startsWith('audio/')) {
+                    const audio = document.createElement('audio');
+                    audio.src = message;
+                    audio.controls = true;
+                    messageElement.appendChild(audio);
+                } else {
+                    const link = document.createElement('a');
+                    link.href = message;
+                    link.innerText = '下载文件';
+                    link.download = '';
+                    messageElement.appendChild(link);
+                }
+            } else {
+                messageElement.innerText = message;
+            }
+
+            const userElement = document.createElement('div');
+            userElement.innerText = data.user_phone_number+':';
+            chatLog.appendChild(userElement);
+
+            chatLog.appendChild(messageElement);
+        };
+
+        chatSocket.onclose = function(e) {
+            console.error('Chat socket closed unexpectedly');
+        };
+
+        document.querySelector('#chat-message-form').onsubmit = function(e) {
+            e.preventDefault();
+            const messageInput = document.querySelector('#chat-message-input');
+            const message = messageInput.value;
+            chatSocket.send(JSON.stringify({
+                'type': 'text',
+                'message': message,
+                'user_phone_number': userPhoneNumber
+            }));
+            messageInput.value = '';
+        };
+
+        document.querySelector('#chat-file-form').onsubmit = function(e) {
+            e.preventDefault();
+            const fileInput = document.querySelector('#chat-file-input');
+            const file = fileInput.files[0];
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                chatSocket.send(JSON.stringify({
+                    'type': 'file',
+                    'file_data': {
+                        'name': file.name,
+                        'data': event.target.result,
+                    },
+                    'file_type': file.type,
+                    'user_phone_number': userPhoneNumber
+                }));
+            };
+            reader.readAsDataURL(file);
+        };
+    </script>
+{% endblock %}

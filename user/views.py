@@ -1,4 +1,6 @@
+import httpx
 import requests
+from asgiref.sync import sync_to_async
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, get_user_model
@@ -33,9 +35,6 @@ class CustomLoginView(LoginView):
             return super().form_valid(form)  # 调用父类的 form_valid 方法继续处理表单。
         else:
             return self.form_invalid(form)  # 处理无效表单
-
-
-
 
 
 # 用户注册
@@ -79,7 +78,7 @@ User = get_user_model()
 def message(request, user_id):
     other_user = get_object_or_404(User, id=user_id)
 
-    messages = Message.objects.filter(# Django Q 对象：构建复杂的查询条件
+    messages = Message.objects.filter(  # Django Q 对象：构建复杂的查询条件
         (Q(sender=request.user) & Q(receiver=other_user)) |
         (Q(sender=other_user) & Q(receiver=request.user))
     ).order_by('timestamp')
@@ -95,3 +94,7 @@ def message(request, user_id):
     else:
         form = MessageForm()
     return render(request, 'user_chat.html', {'other_user': other_user, 'messages': messages, 'form': form})
+
+
+def chat_room(request, room_name):
+    return render(request, 'chat_room.html', {'room_name': room_name})
