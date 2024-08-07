@@ -1,7 +1,8 @@
 {% extends 'index.html' %}
 {% block content %}
-    <div id="chat-log"></div>
-
+    <div id="messages" style="height: 70vh">
+        <div id="chat-log"></div>
+    </div>
     <form id="chat-message-form">
         <input type="text" id="chat-message-input" autocomplete="off">
         <button type="submit">Send</button>
@@ -47,7 +48,7 @@
                 } else {
                     const link = document.createElement('a');
                     link.href = message;
-                    link.innerText = '下载文件';
+                    link.innerText = '下载文档';
                     link.download = '';
                     messageElement.appendChild(link);
                 }
@@ -55,7 +56,7 @@
                 messageElement.innerText = message;
             }
 
-            const userElement = document.createElement('div');
+            const userElement = document.createElement('h4');
             userElement.innerText = data.user_phone_number+':';
             chatLog.appendChild(userElement);
 

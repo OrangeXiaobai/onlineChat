@@ -16,7 +16,6 @@ from backend.forms import EditUserForm, AddAnswerForm, EditAnswerForm
 from user.models import CustomUser
 
 
-
 # 用户列表
 def user_admin(request):
     users = CustomUser.objects.all()
